@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 04. Mai 2025 um 21:35
+-- Erstellungszeit: 09. Mai 2025 um 23:33
 -- Server-Version: 10.4.32-MariaDB
 -- PHP-Version: 8.2.12
 
@@ -106,8 +106,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `salutation`, `firstname`, `lastname`, `address`, `zipcode`, `city`, `email`, `username`, `password_hash`, `role`, `is_active`, `api_token`) VALUES
-(1, 'Herr', 'Markus', 'Tuma', 'Auhirschenweg 47', '1220', 'Wien ', 'mtuma1220@gmail.com', 'asdfasfd', '$2y$10$r/j6u9KG7v9EGkIGYuTBJu6v8KTlC4r6BA5qPJam1H2VtHvC2Q3K.', 'user', 1, NULL),
-(2, 'Herr', 'Markus', 'Tuma', 'Auhirschenweg 47', '1220', 'Wien ', 'wi23b056@technikum-wien.at', 'Marknigga', '$2y$10$Yn8bIFhj5AJBxJF89dLeTObOLliDna7nthPiFS7KGvlbV0BVHjMsW', 'user', 1, 'b705122364cd19f773f0d0668fc5c898a031ac5b080902314edf6a8497caffef');
+(3, 'Herr', 'Markus', 'Tuma', 'Auhirschenweg 47', '1010', 'Wien', 'mtuma1220@gmail.com', 'DerMarkus', '$2y$10$s49uytybKD0q2HFfRz68X.oKghKzdu2riNISaJMfT6n3ZEwo0dsYm', 'user', 1, '73d37f4c21712b3961f4a8fa57a7691c90f6313a6a529baa18b689763194450a'),
+(4, '', '', '', '', '', '', 'admin@gigagear.com', 'admin', '$2y$10$YXDa.pDZ5v5qOT3mmd49ru3bb4B4WZP77vjmFdmRr7pF4Q0yWE.SW', 'admin', 1, '0d4f4dc0383445caadd2fde90433f48bb0e5e2cb64536240a74a72108c78797c');
 
 --
 -- Indizes der exportierten Tabellen
@@ -176,13 +176,13 @@ ALTER TABLE `order_items`
 -- AUTO_INCREMENT für Tabelle `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT für Tabelle `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints der exportierten Tabellen

@@ -53,23 +53,23 @@
                     <p>Geschäftsführer: Enes Demir</p>
                     <p>Geschäftsanteile: Enes Demir (33%), Markus Tuma (33%), Omar Abd El Latif (33%)</p>
 
-                    <div class="row mt-4">
+                    <!-- <div class="row mt-4">
                         <div class="col-lg-4 text-center">
-                            <img src="assets/image/Impressum/EnesDemir.png" alt="Enes Demir" style="max-width: 250px;">
+                            <img src="../res/images/EnesDemir.png" alt="Enes Demir" style="max-width: 250px;">
                             <p class="mt-2"><strong>Enes Demir</strong></p>
                         </div>
                         <div class="col-lg-4 text-center">
-                            <img src="assets/image/Impressum/MarkusTuma.png" alt="Markus Tuma"
+                            <img src="../res/images//MarkusTuma.png" alt="Markus Tuma"
                                 style="max-width: 250px;">
                             <p class="mt-2"><strong>Markus Tuma</strong></p>
                         </div>
 
                         <div class="col-lg-4 text-center">
-                            <img src="assets/image/Impressum/MarkusTuma.png" alt="Markus Tuma"
+                            <img src="../res/images/OmarAbdElLatif.png" alt="Omar Abd El Latif"
                                 style="max-width: 250px;">
-                            <p class="mt-2"><strong>Markus Tuma</strong></p>
+                            <p class="mt-2"><strong>Omar Abd El Latif</strong></p>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-1"></div>
                 <div class="col-xs-12 col-sm-12 col-md-6 d-flex justify-content-end align-items-center">

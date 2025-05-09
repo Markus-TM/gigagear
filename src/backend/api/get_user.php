@@ -55,4 +55,3 @@ echo json_encode([
 
 $stmt->close();
 $mysqli->close();
-?>

@@ -8,18 +8,31 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
+        <!-- Normal User Links -->
+        <li class="nav-item" id="nav-home">
           <a class="nav-link active" aria-current="page" href="../sites/imprint.php">Home</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" id="nav-products">
           <a class="nav-link active" aria-current="page" href="../sites/products.php">Produkte</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" id="nav-cart">
           <a class="nav-link active" aria-current="page" href="../sites/cart.php">Warenkorb</a>
         </li>
         <li class="nav-item d-none" id="nav-account">
           <a class="nav-link active" aria-current="page" href="../sites/account.php">Mein Konto</a>
         </li>
+
+        <!-- Admin-only Links (nur sichtbar für Admins) -->
+        <li class="nav-item d-none" id="nav-product-add">
+          <a class="nav-link" href="../sites/product_add.php">Produkt hinzufügen</a>
+        </li>
+        <li class="nav-item d-none" id="nav-product-edit">
+          <a class="nav-link" href="../sites/product_edit.php">Produkt bearbeiten</a>
+        </li>
+        <li class="nav-item d-none" id="nav-customer-edit">
+          <a class="nav-link" href="../sites/customer_edit.php">Kunden bearbeiten</a>
+        </li>
+
         <!-- LOGIN/REGISTER Dropdown -->
         <li class="nav-item Anmeldung" id="nav-auth">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -34,7 +47,6 @@
 
       <!-- RIGHT: Username + Logout -->
       <ul class="navbar-nav ms-auto">
-        <!-- Eingeloggt-Anzeige -->
         <!-- Eingeloggt-Anzeige -->
         <li class="nav-item d-none" id="nav-username">
           <span class="nav-link disabled">
@@ -55,11 +67,19 @@
   document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
+    const role = localStorage.getItem('role');  // Holen der Rolle (z. B. admin)
 
+    // Elemente der Navigation
     const navAuth = document.getElementById('nav-auth');
     const navLogout = document.getElementById('nav-logout');
     const navUsername = document.getElementById('nav-username');
     const navAccount = document.getElementById('nav-account');
+    const navHome = document.getElementById('nav-home');
+    const navProducts = document.getElementById('nav-products');
+    const navCart = document.getElementById('nav-cart');
+    const navProductAdd = document.getElementById('nav-product-add');
+    const navProductEdit = document.getElementById('nav-product-edit');
+    const navCustomerEdit = document.getElementById('nav-customer-edit');
     const usernameDisplay = document.getElementById('username-display');
 
     if (token) {
@@ -70,6 +90,19 @@
       if (navUsername) navUsername.classList.remove('d-none');
       if (navAccount) navAccount.classList.remove('d-none');
       if (usernameDisplay && username) usernameDisplay.textContent = username;
+
+      // Admin-Links anzeigen, wenn Rolle Admin
+      if (role === 'admin') {
+        if (navProductAdd) navProductAdd.classList.remove('d-none');
+        if (navProductEdit) navProductEdit.classList.remove('d-none');
+        if (navCustomerEdit) navCustomerEdit.classList.remove('d-none');
+        
+        // Normale User-Links verstecken
+        if (navHome) navHome.classList.add('d-none');
+        if (navProducts) navProducts.classList.add('d-none');
+        if (navCart) navCart.classList.add('d-none');
+        if (navAccount) navAccount.classList.add('d-none');
+      }
     } else {
       // Show login/register dropdown
       if (navAuth) navAuth.style.display = '';
@@ -77,6 +110,11 @@
       if (navLogout) navLogout.classList.add('d-none');
       if (navUsername) navUsername.classList.add('d-none');
       if (navAccount) navAccount.classList.add('d-none'); 
+      
+      // Verstecke Admin-Links, wenn der Benutzer nicht eingeloggt ist
+      if (navProductAdd) navProductAdd.classList.add('d-none');
+      if (navProductEdit) navProductEdit.classList.add('d-none');
+      if (navCustomerEdit) navCustomerEdit.classList.add('d-none');
     }
 
     // Logout click
@@ -88,7 +126,7 @@
         localStorage.removeItem('username');
         localStorage.removeItem('role');
         document.cookie = 'remember_token=; Max-Age=0; path=/;';
-        location.reload(); // Reload page after logout
+        location.href = '../sites/login.php';  // Redirect auf die Login-Seite nach Logout
       });
     }
   });
