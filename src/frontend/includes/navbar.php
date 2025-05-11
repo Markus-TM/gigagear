@@ -23,9 +23,6 @@
         </li>
 
         <!-- Admin-only Links (nur sichtbar für Admins) -->
-        <li class="nav-item d-none" id="nav-product-add">
-          <a class="nav-link" href="../sites/product_add.php">Produkt hinzufügen</a>
-        </li>
         <li class="nav-item d-none" id="nav-product-edit">
           <a class="nav-link" href="../sites/product_edit.php">Produkt bearbeiten</a>
         </li>

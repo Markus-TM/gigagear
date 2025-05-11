@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   const productForm = document.getElementById("product-form");
+  loadCategories();
+  loadCartCount();
+  const sessionId = getOrCreateSessionId();
 
   productForm.addEventListener("submit", (event) => {
     event.preventDefault(); // Verhindert das Standardverhalten (Seitenreload)

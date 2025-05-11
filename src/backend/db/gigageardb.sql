@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 09. Mai 2025 um 23:33
+-- Erstellungszeit: 11. Mai 2025 um 15:22
 -- Server-Version: 10.4.32-MariaDB
 -- PHP-Version: 8.2.12
 
@@ -79,6 +79,13 @@ CREATE TABLE `products` (
   `is_active` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Daten für Tabelle `products`
+--
+
+INSERT INTO `products` (`id`, `name`, `description`, `price`, `rating`, `category`, `image_path`, `is_active`) VALUES
+(3, 'Intel Core Ultra 9 285K, 8C+16c/24T, 3.70-5.70GHz, boxed ohne Kühler ', '\nKerne\n    24 (8C+16c) \nThreads\n    24 (8+16) \nTurbotakt\n    5.70GHz (Thermal Velocity Boost), 5.60GHz (Turbo Boost Max 3.0), 5.50GHz (P-Core), 4.60GHz (E-Core) \nBasistakt\n    3.70GHz (P-Core), 3.20GHz (E-Core) \nTDP\n    125W (Processor Base Power), 250W (Maximum Turbo Power) \nGrafik\n    ja (Intel Graphics) \nSockel\n    Intel 1851 (LGA1851) \nChipsatz-Eignung\n    B860, H810, W880, Z890 \nCodename\n    Arrow Lake-S \nArchitektur\n    Lion Cove (P-Core) + Skymont (E-Core) \nFertigung\n    TSMC 3nm \nL2-Cache\n    40MiB (8x 3MiB + 4x 4MiB) ', 609.99, 0, 'Prozessor', 'bild', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -106,8 +113,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `salutation`, `firstname`, `lastname`, `address`, `zipcode`, `city`, `email`, `username`, `password_hash`, `role`, `is_active`, `api_token`) VALUES
-(3, 'Herr', 'Markus', 'Tuma', 'Auhirschenweg 47', '1010', 'Wien', 'mtuma1220@gmail.com', 'DerMarkus', '$2y$10$s49uytybKD0q2HFfRz68X.oKghKzdu2riNISaJMfT6n3ZEwo0dsYm', 'user', 1, '73d37f4c21712b3961f4a8fa57a7691c90f6313a6a529baa18b689763194450a'),
-(4, '', '', '', '', '', '', 'admin@gigagear.com', 'admin', '$2y$10$YXDa.pDZ5v5qOT3mmd49ru3bb4B4WZP77vjmFdmRr7pF4Q0yWE.SW', 'admin', 1, '0d4f4dc0383445caadd2fde90433f48bb0e5e2cb64536240a74a72108c78797c');
+(3, 'Herr', 'Markus', 'Tuma', 'Auhirschenweg 47', '1010', 'Wien', 'mtuma1220@gmail.com', 'DerMarkus', '$2y$10$s49uytybKD0q2HFfRz68X.oKghKzdu2riNISaJMfT6n3ZEwo0dsYm', 'user', 1, '1861a2faf42e803e58129e3dc70b4ba203ed69f40de4e8b00b8d8ae7bc4196c4'),
+(4, '', '', '', '', '', '', 'admin@gigagear.com', 'admin', '$2y$10$YXDa.pDZ5v5qOT3mmd49ru3bb4B4WZP77vjmFdmRr7pF4Q0yWE.SW', 'admin', 1, 'ce54126d4a9fce8c753d538011a473a86f4b42f734eaaac74f86afbb7870a778');
 
 --
 -- Indizes der exportierten Tabellen
@@ -176,7 +183,7 @@ ALTER TABLE `order_items`
 -- AUTO_INCREMENT für Tabelle `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT für Tabelle `users`
