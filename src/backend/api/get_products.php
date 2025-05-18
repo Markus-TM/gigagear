@@ -3,7 +3,6 @@ header('Content-Type: application/json');
 
 require_once("../config/dbaccess.php");
 
-// DB-Verbindung wie in deinem Beispiel
 $mysqli = new mysqli($host, $username, $password, $dbname);
 
 if ($mysqli->connect_error) {
@@ -12,10 +11,22 @@ if ($mysqli->connect_error) {
     exit;
 }
 
-// Aktive Produkte abfragen
-$sql = "SELECT id, name, description, rating, category, image_path
+// Basisabfrage
+$sql = "SELECT id, name, description, price, rating, category, image_path
         FROM products
         WHERE is_active = 1";
+
+// Suchparameter
+if (isset($_GET['search']) && !empty($_GET['search'])) {
+    $searchTerm = $mysqli->real_escape_string($_GET['search']);
+    $sql .= " AND (name LIKE '%$searchTerm%' OR description LIKE '%$searchTerm%')";
+}
+
+// Wenn eine Kategorie-ID übergeben wurde, filtere danach
+if (isset($_GET['category_id']) && $_GET['category_id'] != 'all') {
+    $categoryId = $mysqli->real_escape_string($_GET['category_id']);
+    $sql .= " AND category = '$categoryId'";
+}
 
 $result = $mysqli->query($sql);
 
@@ -34,3 +45,4 @@ echo json_encode($products);
 
 $result->free();
 $mysqli->close();
+?>
