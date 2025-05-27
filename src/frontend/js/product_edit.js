@@ -17,7 +17,7 @@ const fetchProducts = () => {
                 // Neue Tabellenzeile mit Produktdaten erstellen
                 row.innerHTML = `
                 <td>
-                    <img src="${product.image_path}" alt="${product.name}" style="width: 60px; height: 60px; object-fit: cover;">
+<img src="../res/images/${product.image_path}" alt="${product.name}" style="width: 60px; height: 60px; object-fit: cover;">
                 </td>
                 <td>${product.name}</td>
                 <td style="white-space: nowrap;">${parseFloat(product.price).toFixed(2)} €</td>

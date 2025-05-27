@@ -1,21 +1,4 @@
-<!DOCTYPE html>
-<html lang="de">
-
-<head>
-    <meta charset="UTF-8" />
-    <title>Impressum</title>
-
-    <!-- jQuery und Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="..." crossorigin="anonymous" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-XYZ..." crossorigin="anonymous" />
-
-
-    <!-- Eigene CSS-Datei (Pfad bitte prüfen!) -->
-    <link src="..\res\css"> <!-- Hinweis: "src" ist kein gültiges Attribut für <link> -->
-</head>
+<?php include("../includes/head.php"); // Navigationsleiste einfügen ?>
 
 <body>
     <?php include("../includes/navbar.php"); // Navigationsleiste einfügen ?>
