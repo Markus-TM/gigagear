@@ -9,8 +9,9 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="..." crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="..."
-        crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-XYZ..." crossorigin="anonymous" />
+
 
     <!-- Eigene CSS-Datei (Pfad bitte prüfen!) -->
     <link src="..\res\css"> <!-- Hinweis: "src" ist kein gültiges Attribut für <link> -->
@@ -60,9 +61,10 @@
                 <!-- Rechter Bereich: Google Maps Standortanzeige -->
                 <div class="col-xs-12 col-sm-12 col-md-1"></div> <!-- Leerraumspalte -->
                 <div class="col-xs-12 col-sm-12 col-md-6 d-flex justify-content-end align-items-center">
-                    <iframe src="https://www.google.com/maps/embed?pb=..." width="600" height="450" style="border:0;"
-                        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-                    </iframe>
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2659.8459803374385!2d16.369389613211425!3d48.19031897112941!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476d077e2e81a4d9%3A0x82ff97c10a39aa89!2sAlza%20Store%20Vienna!5e0!3m2!1sde!2sat!4v1748358389223!5m2!1sde!2sat"
+                        width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
                 </div>
             </div>
         </div>
