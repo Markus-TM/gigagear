@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Gigagear</a>
+    <a class="navbar-brand" href="imprint.php">Gigagear</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
       aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -24,10 +24,10 @@
 
         <!-- Admin-only Links (nur sichtbar für Admins) -->
         <li class="nav-item d-none" id="nav-product-edit">
-          <a class="nav-link" href="../sites/product_edit.php">Produkt bearbeiten</a>
+          <a class="nav-link" href="../sites/product_edit.php">Produkt verwalten</a>
         </li>
         <li class="nav-item d-none" id="nav-customer-edit">
-          <a class="nav-link" href="../sites/customer_edit.php">Kunden bearbeiten</a>
+          <a class="nav-link" href="../sites/customer_edit.php">Kunden verwalten</a>
         </li>
 
         <!-- LOGIN/REGISTER Dropdown -->
@@ -93,7 +93,7 @@
         if (navProductAdd) navProductAdd.classList.remove('d-none');
         if (navProductEdit) navProductEdit.classList.remove('d-none');
         if (navCustomerEdit) navCustomerEdit.classList.remove('d-none');
-        
+
         // Normale User-Links verstecken
         if (navHome) navHome.classList.add('d-none');
         if (navProducts) navProducts.classList.add('d-none');
@@ -106,8 +106,8 @@
       // Hide logout + username
       if (navLogout) navLogout.classList.add('d-none');
       if (navUsername) navUsername.classList.add('d-none');
-      if (navAccount) navAccount.classList.add('d-none'); 
-      
+      if (navAccount) navAccount.classList.add('d-none');
+
       // Verstecke Admin-Links, wenn der Benutzer nicht eingeloggt ist
       if (navProductAdd) navProductAdd.classList.add('d-none');
       if (navProductEdit) navProductEdit.classList.add('d-none');
@@ -122,6 +122,7 @@
         localStorage.removeItem('token');
         localStorage.removeItem('username');
         localStorage.removeItem('role');
+        localStorage.removeItem('user_id');
         document.cookie = 'remember_token=; Max-Age=0; path=/;';
         location.href = '../sites/login.php';  // Redirect auf die Login-Seite nach Logout
       });

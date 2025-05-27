@@ -1,41 +1,45 @@
+// Session-ID für Warenkorb-Tracking laden oder neu erstellen
 const sessionId = getOrCreateSessionId();
 
+// Warten, bis das gesamte HTML-Dokument geladen ist
 document.addEventListener("DOMContentLoaded", () => {
-  loadCategories();
-  loadProducts();
-  loadCartCount();
-  setupDragAndDrop();
-  setupSearch();
+  loadCategories();     // Kategorien aus Backend laden
+  loadProducts();       // Alle Produkte laden
+  loadCartCount();      // Anzahl Produkte im Warenkorb anzeigen
+  setupDragAndDrop();   // Drag-&-Drop-Funktion für Warenkorb aktivieren
+  setupSearch();        // Produktsuchleiste initialisieren
 });
 
+// Erstellt (falls nötig) eine eindeutige Session-ID und speichert sie im localStorage
 function getOrCreateSessionId() {
-  let id = localStorage.getItem("session_id");
+  let id = localStorage.getItem("session_id"); // ID aus localStorage holen
   if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem("session_id", id);
+    id = crypto.randomUUID();                  // Neue UUID erzeugen (browserseitig)
+    localStorage.setItem("session_id", id);    // In localStorage speichern
   }
-  return id;
+  return id;                                    // ID zurückgeben
 }
 
+// Aktiviert die Produktsuche (Live-Suche, Button, Enter-Taste)
 function setupSearch() {
   const searchInput = document.getElementById("product-search");
   const searchButton = document.querySelector(".search-button");
-  
+
   if (searchInput) {
-    // Event-Listener für Echtzeit-Suche während des Tippens
-    searchInput.addEventListener("input", debounce(function(e) {
+    // Live-Suche mit Verzögerung (debounce)
+    searchInput.addEventListener("input", debounce(function (e) {
       performSearch(e.target.value);
-    }, 300)); // 300ms Verzögerung
-    
-    // Event-Listener für Suche bei Klick auf den Lupen-Button
+    }, 300));
+
+    // Suche per Klick
     if (searchButton) {
-      searchButton.addEventListener("click", function() {
+      searchButton.addEventListener("click", function () {
         performSearch(searchInput.value);
       });
     }
-    
-    // Event-Listener für Suche bei Drücken der Enter-Taste
-    searchInput.addEventListener("keypress", function(e) {
+
+    // Suche per Enter-Taste
+    searchInput.addEventListener("keypress", function (e) {
       if (e.key === "Enter") {
         performSearch(searchInput.value);
       }
@@ -43,212 +47,161 @@ function setupSearch() {
   }
 }
 
-// Hilfsfunktion für Debounce (verhindert zu viele Anfragen)
+// debounce: Verzögert den Aufruf einer Funktion (z. B. bei schnellem Tippen)
 function debounce(func, wait) {
   let timeout;
-  return function(...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
+  return function (...args) {
+    clearTimeout(timeout); // alten Timeout abbrechen
+    timeout = setTimeout(() => func.apply(this, args), wait); // neuen setzen
   };
 }
 
-// Funktion zum Durchführen der Suche
+// Entscheidet, welche Such- oder Filterfunktion ausgeführt werden soll
 function performSearch(searchTerm) {
-  searchTerm = searchTerm.trim().toLowerCase();
-  
-  // Aktuelle Kategorie berücksichtigen
+  searchTerm = searchTerm.trim().toLowerCase(); // Eingabe bereinigen
   const categorySelect = document.getElementById("category-select");
   const selectedCategory = categorySelect ? categorySelect.value : "all";
-  
+
   if (searchTerm === "") {
-    // Wenn Suchfeld leer ist, zeige alle Produkte der aktuellen Kategorie
-    if (selectedCategory === "all") {
-      loadProducts();
-    } else {
-      loadProductsByCategory(selectedCategory);
-    }
+    // Wenn kein Suchbegriff: Produkte laden (ggf. nach Kategorie)
+    selectedCategory === "all" ? loadProducts() : loadProductsByCategory(selectedCategory);
   } else {
-    // Sonst filtere nach Suchbegriff und Kategorie
+    // Suche nach Suchbegriff und ggf. Kategorie
     searchProducts(searchTerm, selectedCategory);
   }
 }
 
-// Funktion zum Suchen von Produkten
+// Sendet eine Suchanfrage ans Backend und ruft die Darstellung auf
 function searchProducts(searchTerm, categoryId = "all") {
   let url = `../../backend/api/get_products.php?search=${encodeURIComponent(searchTerm)}`;
-  
   if (categoryId !== "all") {
     url += `&category_id=${categoryId}`;
   }
-  
-  fetch(url)
-    .then((res) => res.json())
-    .then((products) => {
-      console.log("Suchergebnisse:", products);
-      const container = document.getElementById("products");
-      container.innerHTML = "";
-      
-      if (products.length === 0) {
-        container.innerHTML = `<p class='text-center mt-4'>Keine Produkte gefunden für "${searchTerm}".</p>`;
-        return;
-      }
-      
-      // Erstelle ein Grid-Container für die Produkte
-      const productGrid = document.createElement("div");
-      productGrid.className = "product-grid";
-      container.appendChild(productGrid);
-      
-      products.forEach((p) => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.setAttribute("draggable", "true");
-        card.setAttribute("data-product-id", p.id);
-        
-        // Bildpfad anpassen
-        const imagePath = "/gigagear/src/frontend/res/images/" + p.image_path;
 
-        // Sterne-Bewertung erstellen
-        const ratingStars = createRatingStars(p.rating || 0);
-        
-        card.innerHTML = `
-          <div class="product-image">
-            <img src="${imagePath}" alt="${p.name}" width="150">
-          </div>
-          <div class="product-info">
-            <h3>${p.name}</h3>
-            <p class="product-description">${p.description || ''}</p>
-            <div class="product-rating">${ratingStars}</div>
-            <p class="product-price">${(Number(p.price) || 0).toFixed(2)} €</p>
-            <button class="add-to-cart-btn" onclick="addToCart(${p.id})">In den Warenkorb</button>
-          </div>
-        `;
-        
-        productGrid.appendChild(card);
-        
-        // Event-Listener für Drag & Drop
-        card.addEventListener("dragstart", handleDragStart);
-      });
-    })
+  fetch(url)
+    .then(res => res.json())
+    .then(products => renderProducts(products, searchTerm)) // Darstellung aktualisieren
     .catch(error => {
       console.error("Fehler bei der Produktsuche:", error);
-      document.getElementById("products").innerHTML = 
+      document.getElementById("products").innerHTML =
         "<p class='text-center mt-4'>Fehler bei der Suche. Bitte versuche es erneut.</p>";
     });
 }
 
-
+// Lädt alle Produkte ohne Filter
 function loadProducts() {
   fetch("../../backend/api/get_products.php")
-    .then((res) => res.json())
-    .then((products) => {
-      console.log("Geladene Produkte:", products);
-      const container = document.getElementById("products");
-      container.innerHTML = "";
-      
-      // Erstelle ein Grid-Container für die Produkte
-      const productGrid = document.createElement("div");
-      productGrid.className = "product-grid";
-      container.appendChild(productGrid);
-      
-      products.forEach((p) => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.setAttribute("draggable", "true");
-        card.setAttribute("data-product-id", p.id);
-        
-        // Bildpfad anpassen - nur den Dateinamen verwenden
-        const imagePath = "/gigagear/src/frontend/res/images/" + p.image_path;
-
-        // Sterne-Bewertung erstellen
-        const ratingStars = createRatingStars(p.rating || 0);
-        
-        card.innerHTML = `
-        <div class="product-image">
-          <img src="${imagePath}" alt="${p.name}" width="150">
-        </div>
-        <div class="product-info">
-          <h3>${p.name}</h3>
-          <p class="product-description">${p.description || ''}</p>
-          <div class="product-rating">${ratingStars}</div>
-          <p class="product-price">${(Number(p.price) || 0).toFixed(2)} €</p>
-          <button class="add-to-cart-btn" onclick="addToCart(${p.id})">In den Warenkorb</button>
-        </div>
-      `;
-      
-        productGrid.appendChild(card);
-        
-        // Event-Listener für Drag & Drop
-        card.addEventListener("dragstart", handleDragStart);
-      });
-    })
+    .then(res => res.json())
+    .then(products => renderProducts(products))
     .catch(error => {
       console.error("Fehler beim Laden der Produkte:", error);
-      document.getElementById("products").innerHTML = 
+      document.getElementById("products").innerHTML =
         "<p>Fehler beim Laden der Produkte. Bitte überprüfe die Konsole.</p>";
     });
 }
 
-function createRatingStars(rating) {
-  let stars = '';
-  for (let i = 1; i <= 5; i++) {
-    if (i <= rating) {
-      stars += '<span class="star filled">★</span>';
-    } else {
-      stars += '<span class="star">☆</span>';
-    }
-  }
-  return stars;
+// Lädt Produkte gefiltert nach Kategorie
+function loadProductsByCategory(categoryId) {
+  fetch(`../../backend/api/get_products.php?category_id=${categoryId}`)
+    .then(res => res.json())
+    .then(products => renderProducts(products))
+    .catch(error => {
+      console.error("Fehler beim Laden der Produkte:", error);
+      document.getElementById("products").innerHTML =
+        "<p>Fehler beim Laden der Produkte. Bitte überprüfe die Konsole.</p>";
+    });
 }
 
+// Erzeugt HTML-Darstellung für eine Liste von Produkten
+function renderProducts(products, searchTerm = "") {
+  const container = document.getElementById("products");
+  container.innerHTML = ""; // vorherigen Inhalt leeren
+
+  // Wenn keine Produkte gefunden wurden
+  if (products.length === 0) {
+    container.innerHTML = `<p class='text-center mt-4'>Keine Produkte gefunden${searchTerm ? ` für "${searchTerm}"` : ""}.</p>`;
+    return;
+  }
+
+  // Container für Grid-Layout erstellen
+  const productGrid = document.createElement("div");
+  productGrid.className = "product-grid";
+  container.appendChild(productGrid);
+
+  // Für jedes Produkt eine Karte erzeugen
+  products.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.setAttribute("draggable", "true"); // Drag aktivieren
+    card.setAttribute("data-product-id", p.id); // ID für Drag-Event
+
+    const imagePath = "/gigagear/src/frontend/res/images/" + p.image_path;
+    const ratingStars = createRatingStars(p.rating || 0); // Bewertung (Sterne)
+
+    // HTML für die Karte
+    card.innerHTML = `
+      <div class="product-image">
+        <img src="${imagePath}" alt="${p.name}" width="150">
+      </div>
+      <div class="product-info">
+        <h3>${p.name}</h3>
+        <p class="product-description">${p.description || ''}</p>
+        <div class="product-rating">${ratingStars}</div>
+        <p class="product-price">${(Number(p.price) || 0).toFixed(2)} €</p>
+        <button class="add-to-cart-btn" onclick="addToCart(${p.id})">In den Warenkorb</button>
+      </div>
+    `;
+
+    productGrid.appendChild(card);
+    card.addEventListener("dragstart", handleDragStart); // Drag-Start registrieren
+  });
+}
+
+// Sterne-Darstellung für Produktbewertung erzeugen
+function createRatingStars(rating) {
+  return [...Array(5)].map((_, i) =>
+    `<span class="star ${i < rating ? "filled" : ""}">${i < rating ? "★" : "☆"}</span>`
+  ).join('');
+}
+
+// Fügt ein Produkt dem Warenkorb hinzu
 function addToCart(productId) {
   fetch('../../backend/api/cart_add.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-      product_id: productId, 
-      session_id: sessionId,
-      quantity: 1
+    body: JSON.stringify({ product_id: productId, session_id: sessionId, quantity: 1 })
+  })
+    .then(response => {
+      if (!response.ok) throw new Error('Netzwerkantwort war nicht ok');
+      return response.json();
     })
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Netzwerkantwort war nicht ok');
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (data.success) {
-      loadCartCount();
-      showNotification("Produkt wurde zum Warenkorb hinzugefügt!");
-    } else {
+    .then(data => {
+      if (data.success) {
+        loadCartCount(); // Anzeige aktualisieren
+        showNotification("Produkt wurde zum Warenkorb hinzugefügt!");
+      } else {
+        showNotification("Fehler beim Hinzufügen zum Warenkorb", "error");
+      }
+    })
+    .catch(error => {
+      console.error("Fehler beim Hinzufügen zum Warenkorb:", error);
       showNotification("Fehler beim Hinzufügen zum Warenkorb", "error");
-    }
-  })
-  .catch(error => {
-    console.error("Fehler beim Hinzufügen zum Warenkorb:", error);
-    showNotification("Fehler beim Hinzufügen zum Warenkorb", "error");
-  });
+    });
 }
 
+// Holt Anzahl & Gesamtpreis der Produkte im Warenkorb
 function loadCartCount() {
   fetch(`../../backend/api/cart_count.php?session_id=${sessionId}`)
     .then(res => {
-      if (!res.ok) {
-        throw new Error('Netzwerkantwort war nicht ok');
-      }
+      if (!res.ok) throw new Error('Netzwerkantwort war nicht ok');
       return res.json();
     })
     .then(data => {
-      // Füge die Anzahl zum Warenkorb-Link in der Navbar hinzu
+      // Badge im Header aktualisieren
       const cartNavLink = document.querySelector("#nav-cart .nav-link");
       if (cartNavLink) {
-        // Entferne zuerst einen vorhandenen Badge, falls vorhanden
         const existingBadge = cartNavLink.querySelector(".cart-badge");
-        if (existingBadge) {
-          existingBadge.remove();
-        }
-        
-        // Füge den neuen Badge hinzu, wenn Artikel im Warenkorb sind
+        if (existingBadge) existingBadge.remove();
         if (data.count && data.count > 0) {
           const badge = document.createElement("span");
           badge.className = "cart-badge";
@@ -256,28 +209,19 @@ function loadCartCount() {
           cartNavLink.appendChild(badge);
         }
       }
-      
-      // Lade den Gesamtpreis für die Vorschau
+
+      // Optional: Vorschau-Box unten rechts aktualisieren
       fetch(`../../backend/api/get_cart.php?session_id=${sessionId}`)
         .then(res => res.json())
         .then(cartData => {
-          // Aktualisiere den Warenkorb-Vorschau-Bereich
           const cartPreview = document.getElementById("cart-preview");
           if (cartPreview) {
             const cartCountElement = cartPreview.querySelector("#cart-count");
-            if (cartCountElement) {
-              cartCountElement.textContent = data.count || 0;
-            }
-            
-            const totalPriceElement = document.getElementById("cart-total-price");
-            if (totalPriceElement) {
-              totalPriceElement.textContent = (cartData.total || 0).toFixed(2);
-              
-              // Aktualisiere auch den Text mit der Artikelanzahl
-              const cartTotalElement = document.getElementById("cart-total");
-              if (cartTotalElement) {
-                cartTotalElement.innerHTML = `Gesamtpreis: <span id="cart-total-price">${(cartData.total || 0).toFixed(2)}</span> € (${data.count || 0} Artikel)`;
-              }
+            if (cartCountElement) cartCountElement.textContent = data.count || 0;
+
+            const cartTotalElement = document.getElementById("cart-total");
+            if (cartTotalElement) {
+              cartTotalElement.innerHTML = `Gesamtpreis: <span id="cart-total-price">${(cartData.total || 0).toFixed(2)}</span> € (${data.count || 0} Artikel)`;
             }
           }
         })
@@ -290,30 +234,25 @@ function loadCartCount() {
     });
 }
 
+// Holt Kategorien aus dem Backend und baut Dropdown auf
 function loadCategories() {
   fetch("../../backend/api/get_categories.php")
-    .then((res) => res.json())
-    .then((categories) => {
+    .then(res => res.json())
+    .then(categories => {
       const select = document.getElementById("category-select");
-      
-      // Behalte die "Alle Kategorien" Option
       select.innerHTML = '<option value="all">Alle Kategorien</option>';
-      
-      categories.forEach((category) => {
+
+      categories.forEach(category => {
         const option = document.createElement("option");
         option.value = category.id;
         option.textContent = category.name;
         select.appendChild(option);
       });
-      
-      // Event-Listener für Kategorieauswahl
+
+      // Filter nach Auswahl
       select.addEventListener("change", (e) => {
         const categoryId = e.target.value;
-        if (categoryId === "all") {
-          loadProducts();
-        } else {
-          loadProductsByCategory(categoryId);
-        }
+        categoryId === "all" ? loadProducts() : loadProductsByCategory(categoryId);
       });
     })
     .catch(error => {
@@ -321,100 +260,39 @@ function loadCategories() {
     });
 }
 
-function loadProductsByCategory(categoryId) {
-  fetch(`../../backend/api/get_products.php?category_id=${categoryId}`)
-    .then((res) => res.json())
-    .then((products) => {
-      console.log("Gefilterte Produkte:", products);
-      const container = document.getElementById("products");
-      container.innerHTML = "";
-      
-      const productGrid = document.createElement("div");
-      productGrid.className = "product-grid";
-      container.appendChild(productGrid);
-      
-      if (products.length === 0) {
-        container.innerHTML = "<p>Keine Produkte in dieser Kategorie gefunden.</p>";
-        return;
-      }
-      
-      products.forEach((p) => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.setAttribute("draggable", "true");
-        card.setAttribute("data-product-id", p.id);
-        
-        // Bildpfad anpassen - nur den Dateinamen verwenden
-        const imagePath = "/gigagear/src/frontend/res/images/" + p.image_path;
-
-        // Sterne-Bewertung erstellen
-        const ratingStars = createRatingStars(p.rating || 0);
-        
-        card.innerHTML = `
-          <div class="product-image">
-            <img src="${imagePath}" alt="${p.name}" width="150">
-          </div>
-          <div class="product-info">
-            <h3>${p.name}</h3>
-            <p class="product-description">${p.description || ''}</p>
-            <div class="product-rating">${ratingStars}</div>
-            <p class="product-price">${(Number(p.price) || 0).toFixed(2)} €</p>
-            <button class="add-to-cart-btn" onclick="addToCart(${p.id})">In den Warenkorb</button>
-          </div>
-        `;
-        
-        productGrid.appendChild(card);
-        
-        // Event-Listener für Drag & Drop
-        card.addEventListener("dragstart", handleDragStart);
-      });
-    })
-    .catch(error => {
-      console.error("Fehler beim Laden der Produkte:", error);
-      document.getElementById("products").innerHTML = 
-        "<p>Fehler beim Laden der Produkte. Bitte überprüfe die Konsole.</p>";
-    });
-}
-
+// Zeigt eine kleine Benachrichtigung unten im Fenster
 function showNotification(message, type = "success") {
-  // Entferne vorhandene Benachrichtigungen
-  const existingNotifications = document.querySelectorAll(".notification");
-  existingNotifications.forEach(notification => {
-    notification.remove();
-  });
-  
+  document.querySelectorAll(".notification").forEach(n => n.remove());
+
   const notification = document.createElement("div");
   notification.className = `notification ${type}`;
   notification.textContent = message;
-  
   document.body.appendChild(notification);
-  
+
   setTimeout(() => {
     notification.classList.add("show");
-    
     setTimeout(() => {
       notification.classList.remove("show");
-      setTimeout(() => {
-        notification.remove();
-      }, 300);
+      setTimeout(() => notification.remove(), 300);
     }, 2000);
   }, 10);
 }
 
-// Drag & Drop Funktionalität
+// Legt den Warenkorb-Zielbereich für Drag-&-Drop an
 function setupDragAndDrop() {
-  // Erstelle einen Warenkorb-Drop-Bereich, wenn er noch nicht existiert
   let cartDropTarget = document.getElementById("cart-drop-target");
-  
+
   if (!cartDropTarget) {
     cartDropTarget = document.createElement("div");
     cartDropTarget.id = "cart-drop-target";
     cartDropTarget.className = "cart-drop-target";
-    cartDropTarget.style.position = "fixed";
-    cartDropTarget.style.bottom = "30px";
-    cartDropTarget.style.right = "30px";
-    cartDropTarget.style.zIndex = "999";
-    cartDropTarget.style.display = "flex"; // Immer anzeigen statt "none"
+    cartDropTarget.style.cssText = `
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 999;
+      display: flex;
+    `;
     cartDropTarget.innerHTML = `
       <div class="cart-icon">
         <i class="fas fa-shopping-cart"></i>
@@ -422,66 +300,46 @@ function setupDragAndDrop() {
       </div>
     `;
     document.body.appendChild(cartDropTarget);
-  } else {
-    // Stelle sicher, dass der Bereich immer sichtbar ist
-    cartDropTarget.style.display = "flex";
   }
-  
+
   cartDropTarget.addEventListener("dragover", (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Drop erlauben
     cartDropTarget.classList.add("drag-over");
   });
-  
+
   cartDropTarget.addEventListener("dragleave", () => {
     cartDropTarget.classList.remove("drag-over");
   });
-  
-  cartDropTarget.addEventListener("drop", handleDrop);
+
+  cartDropTarget.addEventListener("drop", handleDrop); // Produkt ablegen
 }
 
-
+// Wird ausgelöst, wenn Drag gestartet wird
 function handleDragStart(e) {
   const productId = e.currentTarget.getAttribute("data-product-id");
   e.dataTransfer.setData("text/plain", productId);
   e.currentTarget.classList.add("dragging");
-  
-  // Zeige den Drop-Bereich an
-  const cartDropTarget = document.getElementById("cart-drop-target");
-  if (cartDropTarget) {
-    cartDropTarget.style.display = "flex";
-  }
 }
 
+// Verarbeitet das Ablegen eines Produkts im Warenkorb
 function handleDrop(e) {
   e.preventDefault();
   const cartDropTarget = document.getElementById("cart-drop-target");
   cartDropTarget.classList.remove("drag-over");
-  
+
   const productId = e.dataTransfer.getData("text/plain");
   if (productId) {
     addToCart(parseInt(productId));
-    
-    // Visuelles Feedback
     const draggedElement = document.querySelector(`.product-card[data-product-id="${productId}"]`);
     if (draggedElement) {
       draggedElement.classList.remove("dragging");
       draggedElement.classList.add("added-to-cart");
-      setTimeout(() => {
-        draggedElement.classList.remove("added-to-cart");
-      }, 1000);
+      setTimeout(() => draggedElement.classList.remove("added-to-cart"), 1000);
     }
   }
 }
 
-// Füge Event-Listener hinzu, um den Drop-Bereich zu verstecken, wenn nicht mehr gedragt wird
+// Entfernt Drag-Klasse nach Drag-Ende
 document.addEventListener("dragend", () => {
-  const cartDropTarget = document.getElementById("cart-drop-target");
-  if (cartDropTarget) {
-  }
-  
-  // Entferne die dragging-Klasse von allen Produkten
-  const draggingElements = document.querySelectorAll(".dragging");
-  draggingElements.forEach(el => {
-    el.classList.remove("dragging");
-  });
+  document.querySelectorAll(".dragging").forEach(el => el.classList.remove("dragging"));
 });
